@@ -71,6 +71,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
                 print(item)
                 raise
             audiopath = f"{_id}"
+            print("Test: ", audiopath)
             if self.min_text_len <= len(phones) and len(phones) <= self.max_text_len:
                 phones = phones.split(" ")
                 tone = [int(i) for i in tone.split(" ")]
