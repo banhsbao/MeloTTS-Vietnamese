@@ -66,10 +66,31 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
             self.audiopaths_sid_text
         ):
             try:
-                _id, spk, language, text, phones, tone, word2ph = item
-            except:
-                print(item)
-                raise
+                # Check if we have 4 or 7 fields
+                if len(item) == 4:
+                    _id, spk, language, text = item
+                    # Generate the missing fields
+                    try:
+                        from text.cleaner import clean_text_bert
+                        norm_text, phones, tones, word2ph, bert = clean_text_bert(text, language, device='cpu')
+                        # Convert to string format
+                        phones_str = " ".join(phones)
+                        tones_str = " ".join([str(i) for i in tones])
+                        word2ph_str = " ".join([str(i) for i in word2ph])
+                    except Exception as e:
+                        logger.error(f"Error processing text: {text}, error: {e}")
+                        skipped += 1
+                        continue
+                else:
+                    _id, spk, language, text, phones_str, tones_str, word2ph_str = item
+                    phones = phones_str.split(" ")
+                    tones = [int(i) for i in tones_str.split(" ")]
+                    word2ph = [int(i) for i in word2ph_str.split(" ")]
+            except Exception as e:
+                logger.error(f"Error unpacking item: {item}, error: {e}")
+                skipped += 1
+                continue
+                
             audiopath = f"{_id}"
             print("Test: ", audiopath)
             
@@ -80,11 +101,8 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
                 continue
                 
             if self.min_text_len <= len(phones) and len(phones) <= self.max_text_len:
-                phones = phones.split(" ")
-                tone = [int(i) for i in tone.split(" ")]
-                word2ph = [int(i) for i in word2ph.split(" ")]
                 audiopaths_sid_text_new.append(
-                    [audiopath, spk, language, text, phones, tone, word2ph]
+                    [audiopath, spk, language, text, phones, tones, word2ph]
                 )
                 lengths.append(os.path.getsize(audiopath) // (2 * self.hop_length))
             else:
