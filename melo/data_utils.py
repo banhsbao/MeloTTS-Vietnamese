@@ -72,6 +72,13 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
                 raise
             audiopath = f"{_id}"
             print("Test: ", audiopath)
+            
+            # Check if the audio file exists
+            if not os.path.exists(audiopath):
+                logger.warning(f"Audio file {audiopath} does not exist. Skipping.")
+                skipped += 1
+                continue
+                
             if self.min_text_len <= len(phones) and len(phones) <= self.max_text_len:
                 phones = phones.split(" ")
                 tone = [int(i) for i in tone.split(" ")]
@@ -82,7 +89,13 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
                 lengths.append(os.path.getsize(audiopath) // (2 * self.hop_length))
             else:
                 skipped += 1
-        logger.info(f'min: {min(lengths)}; max: {max(lengths)}' )
+        
+        # Add check for empty lengths list
+        if lengths:
+            logger.info(f'min: {min(lengths)}; max: {max(lengths)}')
+        else:
+            logger.warning("No valid samples found! The lengths list is empty.")
+        
         logger.info(
             "skipped: "
             + str(skipped)

@@ -52,7 +52,7 @@ def main(
         for line in tqdm(open(metadata, encoding="utf-8").readlines()):
             try:
                 utt, spk, language, text = line.strip().split("|")
-                norm_text, phones, tones, word2ph, bert = clean_text_bert(text, language, device='cuda:0')
+                norm_text, phones, tones, word2ph, bert = clean_text_bert(text, language, device='cpu')
                 for ph in phones:
                     if ph not in symbols and ph not in new_symbols:
                         new_symbols.append(ph)

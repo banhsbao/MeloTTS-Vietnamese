@@ -32,9 +32,11 @@
     "mel_fmin": 0.0,
     "mel_fmax": null,
     "add_blank": true,
-    "n_speakers": 0,
+    "n_speakers": 1,
     "cleaned_text": true,
-    "spk2id": {}
+    "spk2id": {
+      "VN-default": 0
+    }
   },
   "model": {
     "use_spk_conditioned_encoder": true,
