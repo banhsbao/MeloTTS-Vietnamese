@@ -1,5 +1,5 @@
-input_tsv = "/dataset/meta_data.tsv"
-output_txt = "/dataset/metadata.list"
+input_tsv = "dataset/meta_data.tsv"
+output_txt = "dataset/metadata.list"
 
 import csv
 
@@ -15,7 +15,7 @@ for encoding in encodings_to_try:
                 if len(row) != 2:
                     continue
                     
-                wav_path = f"/dataset/{row[0]}"
+                wav_path = f"dataset/{row[0]}"
                 language = "VN"
                 script = row[1]
                 
